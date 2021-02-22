@@ -10,6 +10,11 @@ namespace LearningProject.DataModels
 
         #region Properties
 
+        #region SelectedNode
+        /// <summary>
+        /// The selected node is the subject node in the ListView which the user
+        /// clicked
+        /// </summary>
         private static SubjectNodes _SelectedNode;
 
         public static SubjectNodes SelectedNode
@@ -18,6 +23,17 @@ namespace LearningProject.DataModels
             set { _SelectedNode = value; }
         }
 
+        #endregion SelectedNode
+
+
+        #region ItemCount
+        /// <summary>
+        /// ItemCount is the number of items created,
+        ///     Not the number of items present because
+        ///     some may have been deleted
+        /// It is used to tie a subject to 
+        ///    various data files
+        /// </summary>
         private static int _ItemCount = 0;
 
         public static int ItemCount
@@ -25,12 +41,9 @@ namespace LearningProject.DataModels
             get { return _ItemCount; }
             set { _ItemCount = value; }
         }
+        #endregion ItemCount
 
-
-
-        private static string ItemsCountFilePath;
-
-       
+        private static string ItemsCountFilePath;       
 
 
         #region Dictionary of Subject Nodes (SubjectNodeDictionary)
@@ -52,7 +65,7 @@ namespace LearningProject.DataModels
 
         #region List of Subject NodeLevelName strings ListView display (SubjectNodesLevelName)
 
-        // Create a List of SubjectNode objects to Match it
+        // Create a List of SubjectNode NodeLevelName strings to match DisplayList
 
         public static List<string> SubjectNodesLevelNameList = new List<string>();
 
@@ -102,13 +115,15 @@ namespace LearningProject.DataModels
                  * Create the Root node and set its counter to ItemCounter and update ItemCounter
                  */
 
-                //// create the initial count and write it to the ItemCount.bin file
-                //int CurrentItemCount = 0;
+                // create the initial count and write it to the ItemCount.bin file
+                int CurrentItemCount = 0;
 
                 ////Create a binary file to hold the current number of items created
                 //ItemsCountFilePath = HomeFolderPath + "\\ItemCount.bin";
                 //FileStream fs = new FileStream(ItemsCountFilePath, FileMode.Create);
                 //BinaryWriter bw = new BinaryWriter(fs);
+
+                // Create a new file to hold the items in the subject dictionary
 
                 //Create a new RootNode
                 SubjectNodes RootNode = new SubjectNodes(ItemCount);
@@ -156,7 +171,7 @@ namespace LearningProject.DataModels
         internal static string GetLeadingChars(string nodeLevelName)
         {
             int LengthOfNodeLevelName = nodeLevelName.Length - 1;
-            return new string(' ', LengthOfNodeLevelName);
+            return new string(' ', LengthOfNodeLevelName*3);
         }
 
         internal static string GetNodeLevelPosition(int ParentsNOC)
@@ -178,7 +193,7 @@ namespace LearningProject.DataModels
         #endregion OpenFiles
 
 
-        #region Reset the ListView Display (ResetDisplayList)
+        #region Display a node's parents, the node and the nodes children (DisplayParentsAndChildren)
 
         /// <summary>
         /// This method creates the List of display strings for the ListView
@@ -186,29 +201,26 @@ namespace LearningProject.DataModels
         /// </summary>
         /// <param name="ThisNode"></param>
         /// <returns></returns>
-        public static List<string> ResetDisplayList(string ThisNodesLevelName)
+        public static List<string> DisplayParentsAndChildren(string ThisNodesLevelName)
         {
 
             // Clear the existing List
             DisplayList.Clear();
-
-            // Clear the SubjectNodesLevelNameList
             SubjectNodesLevelNameList.Clear();
-            DisplayList.Add("Root");
-            SubjectNodesLevelNameList.Add("*");
 
-            // Increment thru ThisNodesLevelName getting the parents' and the node's display string
-            for (int i =1; i< ThisNodesLevelName.Length; i++)
+            // Display Parents and chosen node
+            for(int i=0; i< ThisNodesLevelName.Length; i++)
             {
-                string CurrentNodeLevelName = ThisNodesLevelName.Substring(0, i+1 );
+                string CurrentNodeLevelName = ThisNodesLevelName.Substring(0, i + 1);
                 SubjectNodes CurrentNode = SubjectNodeDictionary[CurrentNodeLevelName];
                 string ThisNodesDisplayString = ReturnDisplayString(CurrentNode);
                 DisplayList.Add(ThisNodesDisplayString);
                 SubjectNodesLevelNameList.Add(CurrentNodeLevelName);
             }
 
-            // Cycle through SubjectNodeDictionary looking for all nodes whose NodeLevelName
-            // Get the length of ThisNodesLevelName
+        // Get the children of the chosen node
+           
+            // Get the Length of the choden nodes node level name because its children NLN will be 1 longer 
             int L = ThisNodesLevelName.Length;
             // begins witn ThisNodesLevelName and whose length is 1 greater that that of ThisNodesLevelName
 
@@ -230,23 +242,25 @@ namespace LearningProject.DataModels
 
             return DisplayList;
 
-        }// End ResetDisplayList method
+        }// End DisplayParentsAndChildren method
 
         #endregion Reset the ListView Display (ResetDisplayList)
 
-        #region GetCurrentItemCount
+        #region Read in the count of items existing at startup  (GetCurrentItemCount)
 
         public static int GetCurrentItemCount()
         {
-            int CurrentItemCount = -1;
-            BinaryReader binReader = new BinaryReader(File.Open(ItemsCountFilePath, FileMode.Open));
-            CurrentItemCount = binReader.ReadInt32();
+            //ItemCount = -1;
+            if (File.Exists(ItemsCountFilePath))
+            {
+                BinaryReader binReader = new BinaryReader(File.Open(ItemsCountFilePath, FileMode.Open));
+                ItemCount = binReader.ReadInt32();
+            }
 
+            return ItemCount;
+        }// End GetCurrentItemCount
 
-            return CurrentItemCount;
-        }
-
-        #endregion GetCurrentItemCount
+        #endregion (GetCurrentItemCount)
 
         #region AddNodeToDictionary
 

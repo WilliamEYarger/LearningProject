@@ -61,8 +61,8 @@
                    FontSize="30" Text="Open or Create Subject Folder"
                    HorizontalAlignment="Center"/>
         <ListView x:Name="lvSubjects" Grid.Row="2" Grid.Column ="0" 
-                  SelectionMode="Single" KeyDown="lvSubjects_KeyDown_1" PreviewMouseLeftButtonDown="lvSubjects_PreviewMouseLeftButtonDown"
-                  
+                  SelectionMode="Single" 
+                  PreviewMouseLeftButtonUp="lvSubjects_PreviewMouseLeftButtonUp"
                   
                   >
             
@@ -97,6 +97,7 @@
                          />
                     <RadioButton x:Name="rbExpandCollapse" GroupName="NodeTasks"
                          Content="Expand/Collapse Selected Node"
+                         Checked="rbExpandCollapse_Checked"
                          />
                     <RadioButton x:Name="rbfurther" GroupName="NodeTasks"
                          Content="Open/Create Data Page forSelected Node"
