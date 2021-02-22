@@ -38,6 +38,7 @@
                           />
                 <MenuItem x:Name="FileSave"
                           Header="Save Data Files"
+                          Click="FileSave_Click"
                           />
                 <Separator/>
                 <MenuItem x:Name="ExitApplication"

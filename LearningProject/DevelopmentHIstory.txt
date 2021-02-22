@@ -1,27 +1,54 @@
-﻿2021 02 15 Initial Logic and Requirements
+﻿2021 02 22
+	The dev commit on 20210222 enabled creation and display of child nodes, and the
+	ability to expand and contract the display
+	THE MAIN OBJECT OF THIS dev DEVELOPMENT IS TO SAVE AND OPEN
+	CREATE  
+		*SubjectNodeDataStrings.txt file and the 
+		*ItemCount.bin file
+	*Create FileSave Method
+	Create method to readin an existing file
+
+2021 02 15 Initial Logic and Requirements
 	1. This will not be a MVVM architecture project
 	2. The first task will be to create a UserControl which contains a ListView
-		a. This ListView will be used to create or select Subject objects which are a hierarchical collection of Learning Subject class objects with 
+		a. This ListView will be used to create or select Subject objects which 
+			are a hierarchical collection of Learning Subject class objects with 
 			the following properties
-			1)	*string LeadCharacters; this property which will appear at the start of the string displayed in the ListView will have varying spaces to 
-				reflect its position in the hierarchy. For example, level 0 will have no spaces, level 1 will have 3, level 2 will have 6 etc
-			2)	*string CI (ChildrenIndicator); this will either be "+ ", indicating that the item has children; "- " indicating that the item doesn't 
-				currently have children or "T " indicating that this is a Terminal (no possibility of having children)
-			3)	*string TitleText; this is the name of the subject similar to a book title, chapter title, section title, paragrapy title etc
-						!!!	NOTE only the three items above will display on the ListView. other properties of the Subject class include:
-			4)	*string NodeLevelName: this mutable porperty will be a unique identifier that is created using single alpahnumeric characters to create a 
+			1)	*string LeadCharacters; this property which will appear at the start 
+				of the string displayed in the ListView will have varying spaces to 
+				reflect its position in the hierarchy. For example, level 0 will have 
+				no spaces, level 1 will have 3, level 2 will have 6 etc
+			2)	*string CI (ChildrenIndicator); this will either be "+ ", indicating 
+				that the item has children; "- " indicating that the item doesn't 
+				currently have children or "T " indicating that this is a Terminal 
+				(no possibility of having children)
+			3)	*string TitleText; this is the name of the subject similar to a book 
+				title, chapter title, section title, paragrapy title etc
+						!!!	NOTE only the three items above will display on the ListView. 
+							other properties of the Subject class include:
+			4)	*string NodeLevelName: this mutable porperty will be a unique identifier 
+				that is created using single alpahnumeric characters to create a 
 				string, in which the length of the string indicates its position in the hierachy
-				a)	the character set will be [0..9][a..z][A..Z]. This gives the possibility of having a maximum of 62 items at each parent and 
+				a)	the character set will be [0..9][a..z][A..Z]. This gives the possibility 
+					of having a maximum of 62 items at each parent and 
 					child level. If more are needed they can be added
-				b)	the 0th object in every parent or child level will have its terminal character set to '0', its 10th to 'a' and its 37th to 'A' etc.
-				c)	the complete name of any object will be created by concatinating the parent's name with the child's name. For eacmple, if a 
+				b)	the 0th object in every parent or child level will have its terminal character 
+					set to '0', its 10th to 'a' and its 37th to 'A' etc.
+				c)	the complete name of any object will be created by concatinating the parent's 
+					name with the child's name. For eacmple, if a 
 					parent's Name was a9, then its third child's name would be a92
-			4)	*int ID: this immutalbe integer will be created by adding 1 the the number of object created. It cannot be changed. If for some 
-				reason the user decides to move an object to some other place in the hierachy its name and the name of all of its children would 
-				change to reflect its new position in the hierarchy, but its ID, which could possible be used to link this object to some external 
+			4)	*int ID: this immutalbe integer will be created by adding 1 the the number of object 
+				created. It cannot be changed. If for some 
+				reason the user decides to move an object to some other place in the hierachy its 
+				name and the name of all of its children would 
+				change to reflect its new position in the hierarchy, but its ID, which could 
+				possible be used to link this object to some external 
 				resource, such as a QA file, a information URL, a data file etc would never change.
-			5)	*int NOC (NumberOfChildren) : This integer indicated the number of primary children that the objects has at any time, subject to the 
-				addition or removal at some later time. It does not indicate the number of any grand children etc. It is used to calculate the 
+			5)	*int NOC (NumberOfChildren) : This integer indicated the number of primary children
+				that the objects has at any time, subject to the 
+				addition or removal at some later time. It does not indicate the number of any 
+				grand children etc. It is used to calculate the 
 				object Name terminal character as described above
-			6)	boolean HasData: this boolean indicates whether there are any accessory data files assigned to this node's ID. If it is true, 
+			6)	boolean HasData: this boolean indicates whether there are any accessory 
+				data files assigned to this node's ID. If it is true, 
 				this precludes deleting this node.

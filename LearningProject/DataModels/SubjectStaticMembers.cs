@@ -43,7 +43,11 @@ namespace LearningProject.DataModels
         }
         #endregion ItemCount
 
-        private static string ItemsCountFilePath;       
+        private static string ItemsCountFilePath;
+
+        private static string HomeFolderPath;
+
+        private static string SubjectName;
 
 
         #region Dictionary of Subject Nodes (SubjectNodeDictionary)
@@ -69,11 +73,7 @@ namespace LearningProject.DataModels
 
         public static List<string> SubjectNodesLevelNameList = new List<string>();
 
-
-
-       
-
-        #endregion DisplaySubjectNodesList
+        #endregion SubjectNodesLevelNam
 
         #endregion Properties
 
@@ -90,8 +90,12 @@ namespace LearningProject.DataModels
         /// as of the .txt file that holds the display data
         /// </summary>
         /// <param name="HomeFolderPat"></param>
-        public static void OpenFiles(string HomeFolderPath)
+        public static void OpenFiles(string ThisHomeFolderPath)
         {
+
+            // set HomeFolderPath
+            HomeFolderPath = ThisHomeFolderPath;
+
             // Get the name of the subject from the last item in the path 
 
             // Get the number of '\\'s in FolderPath
@@ -101,14 +105,14 @@ namespace LearningProject.DataModels
             var FolderName = StringHelper.ReturnItemAtPos(HomeFolderPath, '\\', NumberOfSlashes - 1);
 
             //Use the FolderName to name the Subject, and its main data files
-            string SubjectName = FolderName;
+            SubjectName = FolderName;
 
             // Create path to this subjects data file
-            var SubjectsDataFile = HomeFolderPath + SubjectName + ".txt";
-            string SubjectDataFilePath = SubjectsDataFile;
+            var SubjectsNodeDataStringsFile = HomeFolderPath + SubjectName + "NodeDataStrings.txt";
+            string SubjectNodesDataFilePath = SubjectsNodeDataStringsFile;
 
             // Test to see if this file exist and if not create it
-            if (!File.Exists(SubjectsDataFile))
+            if (!File.Exists(SubjectsNodeDataStringsFile))
             {
                 /* This is a newly created subject so initialize the  ItemCounter to 0, 
                  * create the string [] array, ArrayOfSubjectNodes to hold all of the subject nodes,
@@ -118,12 +122,15 @@ namespace LearningProject.DataModels
                 // create the initial count and write it to the ItemCount.bin file
                 int CurrentItemCount = 0;
 
-                ////Create a binary file to hold the current number of items created
-                //ItemsCountFilePath = HomeFolderPath + "\\ItemCount.bin";
-                //FileStream fs = new FileStream(ItemsCountFilePath, FileMode.Create);
-                //BinaryWriter bw = new BinaryWriter(fs);
+                //Create a binary file to hold the current number of items created
+                ItemsCountFilePath = HomeFolderPath + "\\ItemCount.bin";
+                FileStream fs = new FileStream(ItemsCountFilePath, FileMode.Create);
+                BinaryWriter bw = new BinaryWriter(fs);
 
                 // Create a new file to hold the items in the subject dictionary
+                var fileStream = File.Create(SubjectsNodeDataStringsFile);
+                fileStream.Close();
+               
 
                 //Create a new RootNode
                 SubjectNodes RootNode = new SubjectNodes(ItemCount);
@@ -162,7 +169,7 @@ namespace LearningProject.DataModels
             }
             else
             {
-                // read in the SubjectsDataFile
+                // read in the SubjectsNodeDataStringsFile
             }// End if else file subject file exists
 
 
@@ -191,6 +198,40 @@ namespace LearningProject.DataModels
 
 
         #endregion OpenFiles
+
+
+        #region SaveFiles
+
+        public static void SaveFiles()
+        {
+            // Create a List<string> OutputNodeDataStringList
+            List<string> OutputNodeDataStringList = new List<string>();
+
+            // Cycle thorugh SubjectNodeDictionary
+            foreach (KeyValuePair<string, SubjectNodes> KVP in SubjectNodeDictionary)
+            {
+                string Key = KVP.Key;
+                SubjectNodes ThisNode = KVP.Value;
+                string SubjectNodeDelimitedString = RetrunNodeDelimitedString(ThisNode);
+                OutputNodeDataStringList.Add(SubjectNodeDelimitedString);
+            }
+
+            // Create a string array of OutputNodeDataStringList
+            string[] OutputNodeDataStringArray = OutputNodeDataStringList.ToArray();
+            // Save OutputNodeDataStringList to SubjectsNodeDataStringsFile.txt
+            File.WriteAllLines(HomeFolderPath + SubjectName + "NodeDataStrings.txt", OutputNodeDataStringArray);
+
+            // Save the CurrentItemCount
+            FileStream fs = new FileStream(ItemsCountFilePath, FileMode.Open);
+            BinaryWriter bw = new BinaryWriter(fs);
+            bw.Write(ItemCount);
+            fs.Close();
+
+
+        }// End SaveFiles
+
+
+        #endregion SaveFiles
 
 
         #region Display a node's parents, the node and the nodes children (DisplayParentsAndChildren)
@@ -274,6 +315,8 @@ namespace LearningProject.DataModels
 
         #region Priate Methods
 
+        #region Retrun the display string for a node   (ReturnDisplayString)
+
         private static string ReturnDisplayString(SubjectNodes ThisNode)
         {
             string DisplayString = "";
@@ -283,7 +326,44 @@ namespace LearningProject.DataModels
             DisplayString = LeadingString + ChildIndicator + NodeText;
 
             return DisplayString;
-        }
+        }// End ReturnDisplayString
+
+        #endregion (ReturnDisplayString)
+
+
+        #region Return a delimited string of the items in a SubjectNode    (RetrunNodeDelimitedString)
+
+        private static string RetrunNodeDelimitedString(SubjectNodes thisNode)
+        {
+
+            string LeadingCharsString = thisNode.LeadingChars;
+            string TitleText = thisNode.TitleText;
+            int ItemIDInt = thisNode.ID;
+            string ItemIDString = ItemIDInt.ToString();
+            int ItemsNumberOfChildren = thisNode.NOC;
+            string ItemsNumberOfChildrenString = ItemsNumberOfChildren.ToString();
+            string ItemsChildrenIncidator = thisNode.CI;
+            string ItemsNodeLevelName = thisNode.NodeLevelName;
+            bool ItemHasData = thisNode.HasData;
+            string ItemHasDataString;
+            if(ItemHasData  == false)
+            {
+                ItemHasDataString = "false";
+            }
+            else
+            {
+                ItemHasDataString = "true";
+            }
+            
+            char D = '\u0240';
+            string OutputString = LeadingCharsString + D + ItemsChildrenIncidator + D + TitleText +
+                D + ItemsNodeLevelName + D + ItemIDString + D + ItemsNumberOfChildrenString + D + ItemHasDataString;
+
+            return OutputString;
+        }// End RetrunNodeDelimitedString
+
+
+        #endregion RetrunNodeDelimitedString
 
         #endregion Priate Methods
     }

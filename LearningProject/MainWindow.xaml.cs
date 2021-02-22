@@ -64,6 +64,18 @@ namespace LearningProject
         #endregion FileOpen_Click
 
 
+        #region Save File (FileSave_Click)
+
+        /// <summary>
+        /// Saves all the files
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FileSave_Click(object sender, RoutedEventArgs e)
+        {
+            SubjectStaticMembers.SaveFiles();
+        }// End FileSave_Click
+        #endregion FileSave_Click
 
         #endregion File Menu
 
@@ -108,7 +120,7 @@ namespace LearningProject
             }
 
             // Get ItemIndex
-            int CurrentItemCount = SubjectStaticMembers.GetCurrentItemCount();
+            int CurrentItemCount = SubjectStaticMembers.ItemCount;
 
             // Create a new node
             CreateNewChildSubjectNode(CurrentItemCount);
@@ -117,6 +129,34 @@ namespace LearningProject
 
         #endregion RadioButton NewChild Click
 
+
+        #region Radio button Expand/Contract Checked  (rbExpandCollapse_Checked)
+
+        /// <summary>
+        /// When a node's children are not showing clicking
+        /// will show this node, its parents and it children
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void rbExpandCollapse_Checked(object sender, RoutedEventArgs e)
+        {
+            if (SelectedNode == null)
+            {
+                MessageBox.Show("You must select a subject node before proceeding!");
+                rbExpandCollapse.IsChecked = false;
+                return;
+            }
+            string SelectedNodeNameLevelName = SelectedNode.NodeLevelName;
+            SubjectStaticMembers.DisplayParentsAndChildren(SelectedNodeNameLevelName);
+            lvSubjects.Items.Clear();
+            foreach (string item in SubjectStaticMembers.DisplayList)
+            {
+                lvSubjects.Items.Add(item);
+            }
+            rbExpandCollapse.IsChecked = false;
+        }// End rbExpandCollapse_Checked
+
+        #endregion rbExpandCollapse_Checked
 
         #endregion Radio buttons
 
@@ -237,34 +277,7 @@ namespace LearningProject
 
         #endregion lvSubjects_PreviewMouseLeftButtonUp
 
-        #region   (rbExpandCollapse_Checked)
-
-        /// <summary>
-        /// When a node's children are not showing clicking
-        /// will show this node, its parents and it children
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void rbExpandCollapse_Checked(object sender, RoutedEventArgs e)
-        {
-            if(SelectedNode == null)
-            {
-                MessageBox.Show("You must select a subject node before proceeding!");
-                rbExpandCollapse.IsChecked = false;
-                return;
-            }
-            string SelectedNodeNameLevelName = SelectedNode.NodeLevelName;
-            SubjectStaticMembers.DisplayParentsAndChildren(SelectedNodeNameLevelName);
-            lvSubjects.Items.Clear();
-            foreach (string item in SubjectStaticMembers.DisplayList)
-            {
-                lvSubjects.Items.Add(item);
-            }
-            rbExpandCollapse.IsChecked = false;
-        }// End rbExpandCollapse_Checked
-
-        #endregion rbExpandCollapse_Checked
-
         #endregion Private Methods
+
     }
 }
