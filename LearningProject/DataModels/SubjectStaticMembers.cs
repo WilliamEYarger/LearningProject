@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -49,6 +50,7 @@ namespace LearningProject.DataModels
 
         private static string SubjectName;
 
+        private static string SubjectsNodeDataStringsPath;
 
         #region Dictionary of Subject Nodes (SubjectNodeDictionary)
         // Create a dictionary of all subject nodes whose key is the node.NodeLevelName
@@ -108,11 +110,11 @@ namespace LearningProject.DataModels
             SubjectName = FolderName;
 
             // Create path to this subjects data file
-            var SubjectsNodeDataStringsFile = HomeFolderPath + SubjectName + "NodeDataStrings.txt";
-            string SubjectNodesDataFilePath = SubjectsNodeDataStringsFile;
+            SubjectsNodeDataStringsPath = HomeFolderPath + SubjectName + "NodeDataStrings.txt";
+            string SubjectNodesDataFilePath = SubjectsNodeDataStringsPath;
 
             // Test to see if this file exist and if not create it
-            if (!File.Exists(SubjectsNodeDataStringsFile))
+            if (!File.Exists(SubjectsNodeDataStringsPath))
             {
                 /* This is a newly created subject so initialize the  ItemCounter to 0, 
                  * create the string [] array, ArrayOfSubjectNodes to hold all of the subject nodes,
@@ -128,7 +130,7 @@ namespace LearningProject.DataModels
                 BinaryWriter bw = new BinaryWriter(fs);
 
                 // Create a new file to hold the items in the subject dictionary
-                var fileStream = File.Create(SubjectsNodeDataStringsFile);
+                var fileStream = File.Create(SubjectsNodeDataStringsPath);
                 fileStream.Close();
                
 
@@ -139,11 +141,7 @@ namespace LearningProject.DataModels
                 RootNode.ID = ItemCount;
                 ItemCount++;
 
-                ////increment the current count and write it to the ItemsCount.bin file
-                //CurrentItemCount++;
-                //bw.Write(CurrentItemCount);
-
-                //bw.Close();
+                
 
                 RootNode.CI = "- ";
                 RootNode.NodeLevelName = "*";
@@ -169,7 +167,57 @@ namespace LearningProject.DataModels
             }
             else
             {
-                // read in the SubjectsNodeDataStringsFile
+                SubjectNodes RootNode = new SubjectNodes();
+                // Read in current ItemCount
+                ItemsCountFilePath = HomeFolderPath + "\\ItemCount.bin";
+                using (var filestream = File.Open(ItemsCountFilePath, FileMode.Open))
+                {
+                    using (var binaryStream = new BinaryReader(filestream))
+                    {
+                        ItemCount = binaryStream.ReadInt32();
+
+                    }
+                }
+
+                // Instantiate the Dictionary
+                SubjectNodeDictionary = new Dictionary<string, SubjectNodes>();
+
+                // Instantiate a new node
+                SubjectNodes ThisNode = new SubjectNodes();
+                // Create the delimiter
+                char D = '\u0240';
+                //Read in SubjectsNodeDataStringsPath 
+                string [] SubjectNodeDataStringArray = File.ReadAllLines(SubjectsNodeDataStringsPath);
+                
+                foreach(string line in SubjectNodeDataStringArray)
+                {
+                    // get the properties of a SubjectNode
+                    string[] ItemsInLine = line.Split(D);
+                    ThisNode.LeadingChars = ItemsInLine[0];
+                    ThisNode.CI = ItemsInLine[1];
+                    ThisNode.TitleText = ItemsInLine[2];
+                    ThisNode.NodeLevelName = ItemsInLine[3];
+                    string IDString =  ItemsInLine[4];
+                    ThisNode.ID = Int32.Parse(IDString);
+                    string NOCString = ItemsInLine[5];
+                    ThisNode.NOC= Int32.Parse(NOCString);
+                    string HasDataString = ItemsInLine[6];
+                    if(HasDataString == "false")
+                    {
+                        ThisNode.HasData = false;
+                    }
+                    else
+                    {
+                        ThisNode.HasData = true;
+                    }
+                    
+
+                    SubjectNodeDictionary.Add(ThisNode.NodeLevelName, ThisNode);
+                    ThisNode = new SubjectNodes();
+                   
+                }// End foreach
+                DisplayParentsAndChildren("*");
+               
             }// End if else file subject file exists
 
 
@@ -218,7 +266,7 @@ namespace LearningProject.DataModels
 
             // Create a string array of OutputNodeDataStringList
             string[] OutputNodeDataStringArray = OutputNodeDataStringList.ToArray();
-            // Save OutputNodeDataStringList to SubjectsNodeDataStringsFile.txt
+            // Save OutputNodeDataStringList to SubjectsNodeDataStringsPath.txt
             File.WriteAllLines(HomeFolderPath + SubjectName + "NodeDataStrings.txt", OutputNodeDataStringArray);
 
             // Save the CurrentItemCount
@@ -249,11 +297,17 @@ namespace LearningProject.DataModels
             DisplayList.Clear();
             SubjectNodesLevelNameList.Clear();
 
+            SubjectNodes CurrentNode = new SubjectNodes();
             // Display Parents and chosen node
-            for(int i=0; i< ThisNodesLevelName.Length; i++)
+            for (int i=0; i< ThisNodesLevelName.Length; i++)
             {
                 string CurrentNodeLevelName = ThisNodesLevelName.Substring(0, i + 1);
-                SubjectNodes CurrentNode = SubjectNodeDictionary[CurrentNodeLevelName];
+ //// THERE IS AN ERROR HERE IN OPENING AN EXISTING FILE ALTHOUGH THE NODELEVELNAME IS CORRENT IT PICTS THE LAST NODE               
+                if (SubjectNodeDictionary.ContainsKey(CurrentNodeLevelName))
+                {
+                    CurrentNode = SubjectNodeDictionary[CurrentNodeLevelName];
+                }
+                
                 string ThisNodesDisplayString = ReturnDisplayString(CurrentNode);
                 DisplayList.Add(ThisNodesDisplayString);
                 SubjectNodesLevelNameList.Add(CurrentNodeLevelName);

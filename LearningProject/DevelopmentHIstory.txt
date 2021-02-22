@@ -6,7 +6,7 @@
 		*SubjectNodeDataStrings.txt file and the 
 		*ItemCount.bin file
 	*Create FileSave Method
-	Create method to readin an existing file
+	*Create method to readin an existing file
 
 2021 02 15 Initial Logic and Requirements
 	1. This will not be a MVVM architecture project
