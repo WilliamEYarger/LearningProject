@@ -79,7 +79,7 @@ namespace LearningProject.DataModels
 
         #endregion Properties
 
-        #region Public Methods
+    #region Public Methods
 
         #region Open Data Files method (OpenFiles)
 
@@ -219,33 +219,40 @@ namespace LearningProject.DataModels
                 DisplayParentsAndChildren("*");
                
             }// End if else file subject file exists
-
-
         }//End OpenFiles method
 
-        internal static string GetLeadingChars(string nodeLevelName)
+        #endregion OpenFiles
+
+        #region GetLeadingChars
+
+
+        public static string GetLeadingChars(string nodeLevelName)
         {
             int LengthOfNodeLevelName = nodeLevelName.Length - 1;
             return new string(' ', LengthOfNodeLevelName*3);
-        }
+        }// End GetLeadingChars
+        #endregion GetLeadingChars
 
-        internal static string GetNodeLevelPosition(int ParentsNOC)
+        #region GetNodeLevelPosition
+
+        public static string GetNodeLevelPosition(int ParentsNOC)
         {
             string NodeLevelPositionString = "0123456789abcedfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
             char [] NodeLevelPositionChars = NodeLevelPositionString.ToCharArray();
             char NodeLevelChar = NodeLevelPositionChars[ParentsNOC];
             return NodeLevelChar.ToString();
 
-        }
+        }// End GetNodeLevelPosition
+        #endregion GetNodeLevelPosition
 
-        internal static string GetSubjectNodeAssociatedWithThisNodeLevelName(int indexOfListViewItem)
+        #region Remove Node From Dictionary
+
+        public static void RemoveNodeFromDictionary(string thisNodesLevelName)
         {
-            string ThisNodesLevelName = SubjectNodesLevelNameList[indexOfListViewItem];
-            return ThisNodesLevelName;
-        }
+            SubjectNodeDictionary.Remove(thisNodesLevelName);
 
-
-        #endregion OpenFiles
+        }// EndRemove Node From Dictionary
+        #endregion Remove Node From Dictionary
 
 
         #region SaveFiles
@@ -301,8 +308,7 @@ namespace LearningProject.DataModels
             // Display Parents and chosen node
             for (int i=0; i< ThisNodesLevelName.Length; i++)
             {
-                string CurrentNodeLevelName = ThisNodesLevelName.Substring(0, i + 1);
- //// THERE IS AN ERROR HERE IN OPENING AN EXISTING FILE ALTHOUGH THE NODELEVELNAME IS CORRENT IT PICTS THE LAST NODE               
+                string CurrentNodeLevelName = ThisNodesLevelName.Substring(0, i + 1);            
                 if (SubjectNodeDictionary.ContainsKey(CurrentNodeLevelName))
                 {
                     CurrentNode = SubjectNodeDictionary[CurrentNodeLevelName];
@@ -339,7 +345,7 @@ namespace LearningProject.DataModels
 
         }// End DisplayParentsAndChildren method
 
-        #endregion Reset the ListView Display (ResetDisplayList)
+        #endregion DisplayParentsAndChildren
 
         #region Read in the count of items existing at startup  (GetCurrentItemCount)
 
@@ -365,9 +371,9 @@ namespace LearningProject.DataModels
         }
         #endregion AddNodeToDictionary
 
-        #endregion Public Methods
+    #endregion Public Methods
 
-        #region Priate Methods
+    #region Priate Methods
 
         #region Retrun the display string for a node   (ReturnDisplayString)
 
@@ -419,6 +425,6 @@ namespace LearningProject.DataModels
 
         #endregion RetrunNodeDelimitedString
 
-        #endregion Priate Methods
+    #endregion Priate Methods
     }
 }

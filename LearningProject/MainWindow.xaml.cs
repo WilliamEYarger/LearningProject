@@ -99,7 +99,7 @@ namespace LearningProject
 
         #endregion  Menu Items
 
-        #region Radio buttons
+    #region Radio buttons
 
 
         #region RadioButton NewChild Click
@@ -111,11 +111,19 @@ namespace LearningProject
             if (tbxNodeName.Text == "")
             {
                 MessageBox.Show("You must Enter text into the Enter Node Text TextBox and select a Parent Node");
+                rbNewChild.IsChecked = false;
                 return;
             }
             if (SelectedNode == null)
             {
                 MessageBox.Show("You Must select a Parent Node before Clicking Create a New Child Node");
+                rbNewChild.IsChecked = false;
+                return;
+            }
+            if (SelectedNode.CI == "T ")
+            {
+                MessageBox.Show("You Cannot add a child to a Terminal node");
+                rbNewChild.IsChecked = false;
                 return;
             }
 
@@ -154,10 +162,132 @@ namespace LearningProject
                 lvSubjects.Items.Add(item);
             }
             rbExpandCollapse.IsChecked = false;
+            SelectedNode = null;
         }// End rbExpandCollapse_Checked
 
         #endregion rbExpandCollapse_Checked
 
+
+        #region Radio button Change Title Text of selected node (rbText_Checked)
+        /// <summary>
+        /// The purpose of this method is to 
+        /// change the TitleText of the selected node
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void rbText_Checked(object sender, RoutedEventArgs e)
+        {
+            if (tbxNodeName.Text == "")
+            {
+                MessageBox.Show("You must Enter text into the Enter Node Text TextBox and select the node to Change");
+                rbText.IsChecked = false;
+                return;
+            }
+            if (SelectedNode == null)
+            {
+                MessageBox.Show("You Must select a Node before Clicking Change Title Text");
+                rbText.IsChecked = false;
+                return;
+            }
+
+            string NewTitleText = tbxNodeName.Text;
+            SelectedNode.TitleText = NewTitleText;
+            string ThisNodeLevelName = SelectedNode.NodeLevelName;
+            SubjectStaticMembers.SubjectNodeDictionary[ThisNodeLevelName] = SelectedNode;
+
+            List<string> NewDisplayList = SubjectStaticMembers.DisplayParentsAndChildren(ThisNodeLevelName);
+
+            lvSubjects.Items.Clear();
+
+            foreach(string DisplayLine in NewDisplayList)
+            {
+                lvSubjects.Items.Add(DisplayLine);
+            }
+
+
+        }// End rbText_Checked
+        #endregion rbText_Checked
+
+
+        #region Radio button (rbTerminal_Checked)
+        private void rbTerminal_Checked(object sender, RoutedEventArgs e)
+        {
+            if (SelectedNode == null)
+            {
+                MessageBox.Show("You must select a subject node before proceeding!");
+                rbTerminal.IsChecked = false;
+                return;
+            }
+
+            SelectedNode.CI = "T ";
+            SubjectStaticMembers.SubjectNodeDictionary[SelectedNode.NodeLevelName] = SelectedNode;
+
+
+            List<string> NewDisplayList = SubjectStaticMembers.DisplayParentsAndChildren(SelectedNode.NodeLevelName);
+
+            lvSubjects.Items.Clear();
+
+            foreach (string DisplayLine in NewDisplayList)
+            {
+                lvSubjects.Items.Add(DisplayLine);
+            }
+
+
+        }// End rbTerminal_Checked
+
+        #endregion(rbTerminal_Checked)
+
+
+        #region Radio Button Delete (rbDelete_Checked)
+
+        private void rbDelete_Checked(object sender, RoutedEventArgs e)
+        {
+            if (SelectedNode == null)
+            {
+                MessageBox.Show("You must select a subject node To delete!");
+                rbDelete.IsChecked = false;
+                return;
+            }
+
+            if(SelectedNode.HasData == true)
+            {
+                MessageBox.Show("You cannot delete a Node that has associated data files");
+                rbDelete.IsChecked = false;
+                SelectedNode = null;
+                return;
+            }
+
+            if(SelectedNode.NOC > 0)
+            {
+                MessageBox.Show("You cannot delete a Node that has children");
+                rbDelete.IsChecked = false;
+                SelectedNode = null;
+                return;
+            }
+
+            //Get the parent's NodeLevelName
+            string ThisNodesLevelName = SelectedNode.NodeLevelName;
+            string ParentsNodeLevelName = ThisNodesLevelName.Substring(0, ThisNodesLevelName.Length - 1);
+
+            // Delete the node from the dictionary
+
+            SubjectStaticMembers.RemoveNodeFromDictionary(ThisNodesLevelName);
+
+            // Reset the display
+            lvSubjects.Items.Clear();
+
+            // get the  the parent display list
+            List<string> ParentsDisplayList = SubjectStaticMembers.DisplayParentsAndChildren(ParentsNodeLevelName);
+
+            // display them
+            foreach(string DisplayLine in ParentsDisplayList)
+            {
+                lvSubjects.Items.Add(DisplayLine);
+            }
+
+            rbDelete.IsChecked = false;
+        }// End rbDelete_Checked
+        #endregion rbDelete_Checked
         #endregion Radio buttons
 
         #region Private Methods
@@ -278,6 +408,7 @@ namespace LearningProject
         #endregion lvSubjects_PreviewMouseLeftButtonUp
 
         #endregion Private Methods
+
 
     }
 }

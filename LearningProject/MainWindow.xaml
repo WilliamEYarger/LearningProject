@@ -88,16 +88,19 @@
                          Checked="rbNewChild_Checked"
                          />
                     <RadioButton x:Name="rbText" GroupName="NodeTasks"
-                         Content="Text/Re-Text Selected Node"
+                         Content="Change Title Text of Selected Node"
+                         Checked="rbText_Checked"
                          />
                     <RadioButton x:Name="rbTerminal" GroupName="NodeTasks"
                          Content="Make Selected Node Terminal"
+                         Checked="rbTerminal_Checked"
                          />
                     <RadioButton x:Name="rbDelete" GroupName="NodeTasks"
                          Content="Delete Selected Node"
+                         Checked="rbDelete_Checked"        
                          />
                     <RadioButton x:Name="rbExpandCollapse" GroupName="NodeTasks"
-                         Content="Expand/Collapse Selected Node"
+                         Content="Show Node, Ancestors and Children"
                          Checked="rbExpandCollapse_Checked"
                          />
                     <RadioButton x:Name="rbfurther" GroupName="NodeTasks"

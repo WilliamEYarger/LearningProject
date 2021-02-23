@@ -1,4 +1,16 @@
-﻿2021 02 22
+﻿2021 02 23 
+	The dev commit on 20210222 created methods to save files
+	and to open existing files
+
+	THE MAIN OBJECT OF THIS DEV IS:
+	1.	*Change the title of Expand/Contract radio button to Show Node, Ancestors & Children
+	2.	*Create method to change the TitleText of a selected node
+	3.	*Create method to make a node terminal
+	4.	*Create method to delete a node
+
+	Commit at 202102230913
+
+2021 02 22
 	The dev commit on 20210222 enabled creation and display of child nodes, and the
 	ability to expand and contract the display
 	THE MAIN OBJECT OF THIS dev DEVELOPMENT IS TO SAVE AND OPEN
